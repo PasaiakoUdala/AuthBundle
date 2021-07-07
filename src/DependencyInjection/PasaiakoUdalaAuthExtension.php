@@ -6,8 +6,10 @@ namespace PasaiakoUdala\AuthBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use PasaiakoUdala\AuthBundle\Service\PasaiaLdapService;
 
 class PasaiakoUdalaAuthExtension extends Extension
 {
@@ -17,13 +19,15 @@ class PasaiakoUdalaAuthExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         $config = $this->processConfiguration(new Configuration(), $configs);
-//        $container->setParameter('msalsas_voting.negative_reasons', $config['negative_reasons']);
-//        $container->setParameter('msalsas_voting.anonymous_percent_allowed', $config['anonymous_percent_allowed']);
-//        $container->setParameter('msalsas_voting.anonymous_min_allowed', $config['anonymous_min_allowed']);
-            $configuration = new Configuration();
-            $config = $this->processConfiguration($configuration, $configs);
-            foreach ($config as $key => $value) {
-                $container->setParameter('pasaikoaudala_auth.' . $key, $value);
-            }
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+        foreach ($config as $key => $value) {
+            $container->setParameter('pasaiako_udala_auth.' . $key, $value);
+        }
+        $definition = $container->getDefinition(PasaiaLdapService::class);
+
+        $definition->setArgument(4, $config['LDAP_ADMIN_TALDEAK']);
+        $definition->setArgument(5, $config['LDAP_KUDEATU_TALDEAK']);
+        $definition->setArgument(6, $config['LDAP_USER_TALDEA']);
     }
 }
