@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
+    "php": "^7.4.0",
     "doctrine/doctrine-bundle": "^2.4",
     "doctrine/orm": "^2.9",
     "symfony/dotenv": "5.3.*",
