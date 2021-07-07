@@ -1,6 +1,6 @@
 {
   "type": "symfony-bundle",
-  "name": "pasaikoudala/authbundle",
+  "name": "pasaiakoudala/authbundle",
   "description": "Pasaiako Udala Authentication against LDAP",
   "license": "MIT",
   "authors": [
