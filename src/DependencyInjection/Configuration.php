@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('LDAP_ADMIN_TALDEAK')->defaultValue('ROL-Antolakuntza_Informatika, Domain Users')->end()
                 ->scalarNode('LDAP_KUDEATU_TALDEAK')->defaultValue('ROL-Antolakuntza_Informatika')->end()
                 ->scalarNode('LDAP_USER_TALDEA')->defaultValue('Domain Users')->end()
+                ->scalarNode('route_after_successfull_login')->defaultValue('default')->end()
             ->end();
 
         return $treeBuilder;

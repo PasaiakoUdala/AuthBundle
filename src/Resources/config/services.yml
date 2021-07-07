@@ -46,4 +46,4 @@ services:
     autowire: true
     class: PasaiakoUdala\AuthBundle\Security\FormLoginAuthenticator
     arguments:
-      [ '@PasaiakoUdala\AuthBundle\Repository\UserRepository', '@PasaiakoUdala\AuthBundle\Service\PasaiaLdapService','@router','@service_container' ]
+      [ '@PasaiakoUdala\AuthBundle\Repository\UserRepository', '@PasaiakoUdala\AuthBundle\Service\PasaiaLdapService','@router', 'route_after_successfull_login','@service_container' ]

@@ -26,18 +26,22 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
     private UserRepository $userRepository;
     private PasaiaLdapService $pasaiaLdapSrv;
     private UrlGeneratorInterface $urlGenerator;
+    private String $route_after_successfull_login;
 
     public const LOGIN_ROUTE = 'pasaiakoudala_auth_login';
 
     public function __construct(
         UserRepository $userRepository,
         PasaiaLdapService $pasaiaLdapSrv,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        string $route_after_successfull_login
     )
     {
         $this->userRepository   = $userRepository;
         $this->pasaiaLdapSrv    = $pasaiaLdapSrv;
         $this->urlGenerator = $urlGenerator;
+        $this->route_after_successfull_login = $route_after_successfull_login;
+        dump($route_after_successfull_login);
     }
 
     public function authenticate(Request $request): PassportInterface
@@ -70,7 +74,7 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('default'));
+        return new RedirectResponse($this->urlGenerator->generate($this->route_after_successfull_login));
 
     }
 
