@@ -1,0 +1,49 @@
+services:
+
+  PasaiakoUdala\AuthBundle\Repository\UserRepository:
+    class: PasaiakoUdala\AuthBundle\Repository\UserRepository
+    arguments:
+      [ '@Doctrine\Persistence\ManagerRegistry' ]
+    tags:
+      ['doctrine.repository_service']
+
+  Symfony\Component\Ldap\Ldap:
+    autoconfigure: true
+    arguments: [ '@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter' ]
+
+  Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
+    autoconfigure: true
+    arguments:
+      - host: "%env(resolve:LDAP_IP)%"
+        port: 389
+        options:
+          protocol_version: 3
+          referrals: false
+
+  PasaiakoUdala\AuthBundle\Service\PasaiaLdapService:
+    class: PasaiakoUdala\AuthBundle\Service\PasaiaLdapService
+    autoconfigure: true
+    arguments:
+      - "%env(resolve:LDAP_IP)%"
+      - "%env(resolve:LDAP_SEARCH_DN)%"
+      - "%env(resolve:LDAP_BASE_DN)%"
+      - "%env(resolve:LDAP_PASSWD)%"
+      - "%env(resolve:LDAP_ADMIN_TALDEAK)%"
+      - "%env(resolve:LDAP_KUDEATU_TALDEAK)%"
+      - "%env(resolve:LDAP_USER_TALDEA)%"
+      - '@Doctrine\ORM\EntityManagerInterface'
+
+
+  PasaiakoUdala\AuthBundle\Controller\SecurityController:
+    class: PasaiakoUdala\AuthBundle\Controller\SecurityController
+    public: true
+    arguments: ['@service_container', '@security.authentication_utils' ]
+    tags: [ 'controller.service_arguments' ]
+
+  #PasaiakoUdala\AuthBundle\Security\FormLoginAuthenticator:
+  paud.form.auth:
+    public: true
+    autowire: true
+    class: PasaiakoUdala\AuthBundle\Security\FormLoginAuthenticator
+    arguments:
+      [ '@PasaiakoUdala\AuthBundle\Repository\UserRepository', '@PasaiakoUdala\AuthBundle\Service\PasaiaLdapService','@router','@service_container' ]
