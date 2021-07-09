@@ -4,7 +4,6 @@ namespace PasaiakoUdala\AuthBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 
 /**
@@ -31,13 +30,11 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("main")
      */
     private ?string $deparment;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("main")
      */
     private ?string $displayname;
 
@@ -53,31 +50,26 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("main")
      */
     private ?string $firstname;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("main")
      */
     private ?string $hizkuntza;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("main")
      */
     private ?string $lanpostua;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("main")
      */
     private ?string $ldapsaila;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
-     * @Groups("main")
      */
     private ?string $nan;
 
@@ -88,7 +80,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Groups("main")
      */
     private ?bool $sailburuada;
 
