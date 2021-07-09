@@ -41,7 +41,6 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
         $this->pasaiaLdapSrv    = $pasaiaLdapSrv;
         $this->urlGenerator = $urlGenerator;
         $this->route_after_successfull_login = $route_after_successfull_login;
-        dump($route_after_successfull_login);
     }
 
     public function authenticate(Request $request): PassportInterface
