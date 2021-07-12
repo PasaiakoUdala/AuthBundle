@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\Ldap;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 class PasaiaLdapService
@@ -50,6 +51,7 @@ class PasaiaLdapService
         } catch (ConnectionException $e) {
             throw new CustomUserMessageAuthenticationException('Pasahitza ez da zuzena.');
         }
+
         return true;
     }
 
@@ -96,9 +98,9 @@ class PasaiaLdapService
      * @param User $user
      * @param Entry $ldapData
      *
-     * @return User
+     * @return User|null
      */
-    private function syncUserInfoFromLdap(User $user, $ldapData): User
+    private function syncUserInfoFromLdap(User $user, $ldapData): ?User
     {
 
         $ldap = $ldapData->getAttributes();
@@ -154,19 +156,20 @@ class PasaiaLdapService
         $lat = []; //array ldap admin taldeak
         $lkt = []; //array ldap kudeatu taldeak
         $lut = []; //array ldap user taldeak
-        if (strpos($this->ldapAdminTaldea, ',') !== false){
+        $hasRole = false; // if this value is false the user exist in LDAP but it is not assigned to any valid LDAP GROUP
+        if (str_contains($this->ldapAdminTaldea, ',')){
             $lat = explode(',', $this->ldapAdminTaldea);
             $lat = array_map('trim',$lat);
         } else {
             $lat[] = $this->ldapAdminTaldea;
         }
-        if (strpos($this->ldapKudeatuTaldea, ',') !== false){
+        if (str_contains($this->ldapKudeatuTaldea, ',')){
             $lkt = explode(',', $this->ldapAdminTaldea);
             $lkt = array_map('trim',$lkt);
         } else {
             $lkt[] = $this->ldapAdminTaldea;
         }
-        if (strpos($this->ldapUserTaldea, ',') !== false){
+        if (str_contains($this->ldapUserTaldea, ',')){
             $lut = explode(',', $this->ldapAdminTaldea);
             $lut = array_map('trim',$lut);
         } else {
@@ -176,21 +179,27 @@ class PasaiaLdapService
         foreach ($lat as $at) {
             if ($this->in_array_r($at, $ldapTaldeak, false)) {
                 $rol[] = 'ROLE_ADMIN';
+                $hasRole = true;
             }
         }
 
         foreach ($lkt as $at) {
             if ($this->in_array_r($at, $ldapTaldeak, false)) {
                 $rol[] = 'ROLE_KUDEATU';
+                $hasRole = true;
             }
         }
 
         foreach ($lut as $at) {
             if ($this->in_array_r($at, $ldapTaldeak, false)) {
                 $rol[] = 'ROLE_USER';
+                $hasRole = true;
             }
         }
 
+        if ( $hasRole !== true ) {
+            throw new CustomUserMessageAuthenticationException("Erabiltzailea ez da beharrezko LDAP taldekoa.");
+        }
         $user->setRoles($rol);
         $this->em->persist($user);
         $this->em->flush();

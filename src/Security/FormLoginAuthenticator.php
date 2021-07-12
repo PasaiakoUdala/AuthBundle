@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
@@ -43,7 +44,7 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
         $this->route_after_successfull_login = $route_after_successfull_login;
     }
 
-    public function authenticate(Request $request): PassportInterface
+    public function authenticate(Request $request): SelfValidatingPassport
     {
         $password = $request->request->get('password');
         $username = $request->request->get('username');
@@ -52,13 +53,14 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
 
         if ( $result ) {
             $dbUser = $this->userRepository->findOneBy(['username' => $username]);
-
+            // todo: check if the user is withing ldap groups
             if (!$dbUser) {
                 // User is not present in the Database, let's create it
                 $this->pasaiaLdapSrv->createDbUserFromLdapData($username);
+            } else {
+                // The User exists in the database, let's update it's data
+                $this->pasaiaLdapSrv->updateDbUserDataFromLdapByUsername($username);
             }
-            // The User exists in the database, let's update it's data
-            $this->pasaiaLdapSrv->updateDbUserDataFromLdapByUsername($username);
         } else {
             throw new UserNotFoundException();
         }
